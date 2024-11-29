@@ -1,0 +1,111 @@
+.problem-viewer-container {
+    display: flex;
+    height: 100vh;
+}
+
+.problem-list-panel {
+    width: 33.33%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid #e0e0e0;
+}
+
+.problem-list-panel h2 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.problem-item {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.problem-item:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.problem-item.selected {
+    background-color: #2563eb;
+    color: white;
+}
+
+.problem-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.problem-difficulty {
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.difficulty-hard {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.difficulty-medium {
+    background-color: #fef9c3;
+    color: #854d0e;
+}
+
+.difficulty-easy {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.problem-tags {
+    display: flex;
+    gap: 5px;
+}
+
+.problem-tag {
+    font-size: 0.7rem;
+    background-color: #e0e7ff;
+    color: #3730a3;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.problem-definition-panel {
+    width: 66.66%;
+    padding: 20px;
+    background-color: white;
+    overflow-y: auto;
+}
+
+.problem-definition-card {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.problem-definition-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+
+.problem-definition-details {
+    margin-bottom: 15px;
+}
+
+.problem-definition-text {
+    color: #4b5563;
+    line-height: 1.6;
+}
