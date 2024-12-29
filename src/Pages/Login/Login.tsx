@@ -12,29 +12,53 @@ import {
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useAuth } from '../../context/AuthContext';
 
-interface LoginProps {
-  setIsLoggedIn: (value: boolean) => void;
-}
+interface LoginProps {}
 
-const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
+const Login: React.FC<LoginProps> = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
+  const { setTokens, setIsLoggedIn } = useAuth();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // Simulate login (use real authentication logic in production)
-    if (form.email === "user@example.com" && form.password === "password") {
+    try {
+      const response = await fetch('http://localhost:8000/api/token/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: form.email,
+          password: form.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      console.log("Log in successful");
+      
+      const data = await response.json();
+      
+      console.log(data);
+      
+      setTokens({
+        access: data.access,
+        refresh: data.refresh,
+      });
       setIsLoggedIn(true);
-      navigate("/items");
-    } else {
-      setError("Invalid email or password");
+      navigate('/domains');
+    } catch (err) {
+      setError('Invalid username or password');
     }
   };
 

@@ -8,16 +8,14 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavbarProps {
-  isLoggedIn: boolean;
-  setIsLoggedIn: (value: boolean) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  isLoggedIn,
-  setIsLoggedIn,
-}) => {
+export const Navbar: React.FC<NavbarProps> = () => {
+  const { isLoggedIn , setIsLoggedIn} = useAuth();
+
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
@@ -41,13 +39,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         </NavigationMenuItem>
         {isLoggedIn && (
           <>
-            <NavigationMenuItem>
-              <Link to="/items">
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Items
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink
                 onClick={handleLogout}
