@@ -1,9 +1,13 @@
 import { useState } from "react";
 // import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 const ProblemStatementViewer = () => {
-  // Sample problem statements with their definitions
+
+  const navigate = useNavigate();
+
+  // Sample problem statements with their definitions  
   const problemStatements = [
     {
       id: 1,
@@ -118,7 +122,13 @@ const ProblemStatementViewer = () => {
                 </span>
               ))}
             </div>
-            <p className="text-gray-700">{selectedProblem.definition}</p>
+            <p className="text-gray-700 mb-6">{selectedProblem.definition}</p>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+              onClick={() => navigate(`/submission`)}
+            >
+              Submit Solution
+            </button>
           </CardContent>
         </Card>
       </div>
