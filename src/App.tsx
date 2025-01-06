@@ -12,6 +12,7 @@ import DomainsList from "./Pages/Domains/domain-list";
 import { ThemeProvider } from "@/components/theme-provider";
 import {AuthProvider} from "./context/AuthContext"
 import { SolutionSubmissionPage } from "./Pages/Submit/SolutionSubmission";
+import SubmissionJudgingPage from "./Pages/Judge/JudgingPage";
 
 function App() {
 
@@ -25,7 +26,8 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/domains" element={<DomainsList />} />
               <Route path="/problem-page" element={<ProblemStatementViewer />} />
-              <Route path="/submission" element={<SolutionSubmissionPage problemId="problem-123" />} />
+              <Route path="/submission" element={<SolutionSubmissionPage problemId="3" />} />
+              <Route path="/judge" element={<SubmissionJudgingPage />} />
             </Routes>
           </div>
         </Router>

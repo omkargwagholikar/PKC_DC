@@ -32,7 +32,7 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = ({ proble
     };
   
     let response = await makeRequest(tokens.access);
-  
+    console.log(response.json());
     // Handle token expiration
     if (response.status === 401) {
       console.warn("Access token expired. Attempting to refresh...");
@@ -57,6 +57,7 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = ({ proble
   
         // Retry the original request with the new access token
         response = await makeRequest(refreshData.access);
+        console.log(response.json());
       } else {
         console.error("Refresh token expired or invalid. Redirecting to login...");
         setTokens(null); // Clear tokens
@@ -68,7 +69,7 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = ({ proble
     if (!response.ok) {
       throw new Error('Failed to submit solution');
     }
-  
+      
     console.log('Solution submitted successfully');
   };
   

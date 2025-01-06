@@ -17,7 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 interface LoginProps {}
 
 const Login: React.FC<LoginProps> = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ userid: "", password: "" });
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
   const { setTokens, setIsLoggedIn } = useAuth();
@@ -36,7 +36,7 @@ const Login: React.FC<LoginProps> = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: form.email,
+          username: form.userid, // Changed from form.email to form.userid
           password: form.password,
         }),
       });
@@ -58,7 +58,7 @@ const Login: React.FC<LoginProps> = () => {
       setIsLoggedIn(true);
       navigate('/domains');
     } catch (err) {
-      setError('Invalid username or password');
+      setError('Invalid user ID or password');
     }
   };
 
@@ -68,19 +68,19 @@ const Login: React.FC<LoginProps> = () => {
         <CardHeader>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
           <CardDescription>
-            Enter your email and password to access your account
+            Enter your user ID and password to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="userid">User ID</Label>
               <Input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="m@example.com"
-                value={form.email}
+                id="userid"
+                type="text"
+                name="userid" // Updated to userid
+                placeholder="Enter your user ID"
+                value={form.userid} // Updated to form.userid
                 onChange={handleChange}
                 required
               />
