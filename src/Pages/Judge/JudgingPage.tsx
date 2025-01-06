@@ -583,7 +583,7 @@
 
 // export default SubmissionJudgingPage;
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -598,7 +598,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FileText, Download, Check, X, Clock, Loader2 } from 'lucide-react';
+import { Download, Check, X, Loader2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from '@/context/AuthContext';
 
 interface SubmittedFile {
   id: number;
@@ -625,7 +627,15 @@ interface Submission {
   special_notes: string;
 }
 
+interface FileContent {
+  content: string;
+  loading: boolean;
+  error: string | null;
+}
+
 const SubmissionJudgingPage = () => {
+  const { tokens } = useAuth();
+
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [selectedQuestion, setSelectedQuestion] = useState<number | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -633,6 +643,7 @@ const SubmissionJudgingPage = () => {
   const [feedback, setFeedback] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fileContents, setFileContents] = useState<Record<string, FileContent>>({});
 
   useEffect(() => {
     fetchSubmissions();
@@ -669,6 +680,81 @@ const SubmissionJudgingPage = () => {
       setError(err instanceof Error ? err.message : 'Failed to judge submission');
     }
   };
+
+  const fetchFileContent = async (filePath: string) => {
+    if (fileContents[filePath]?.content) return;
+
+    setFileContents(prev => ({
+      ...prev,
+      [filePath]: { content: '', loading: true, error: null }
+    }));
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/download${filePath}`);
+      if (!response.ok) throw new Error('Failed to fetch file content');
+      const content = await response.text();
+      
+      setFileContents(prev => ({
+        ...prev,
+        [filePath]: { content, loading: false, error: null }
+      }));
+    } catch (err) {
+      setFileContents(prev => ({
+        ...prev,
+        [filePath]: { 
+          content: '', 
+          loading: false, 
+          error: err instanceof Error ? err.message : 'Failed to load file'
+        }
+      }));
+    }
+  };
+
+  const renderFileContent = () => {
+    if (!selectedSubmission) return null;
+
+    return (
+      <div className="space-y-4">
+        <h3 className="font-semibold">Submitted Files:</h3>
+        <Tabs defaultValue={selectedSubmission.files[0]?.file} className="w-full">
+          <TabsList className="mb-4">
+            {selectedSubmission.files.map((file) => (
+              <TabsTrigger
+                key={file.id}
+                value={file.file}
+                onClick={() => fetchFileContent(file.file)}
+              >
+                {file.file.split('/').pop()}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          
+          {selectedSubmission.files.map((file) => (
+            <TabsContent key={file.id} value={file.file}>
+              {fileContents[file.file]?.loading ? (
+                <div className="flex items-center justify-center p-4">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Loading file...
+                </div>
+              ) : fileContents[file.file]?.error ? (
+                <div className="text-red-500 p-4">
+                  {fileContents[file.file].error}
+                </div>
+              ) : (
+                <pre className="bg-gray-50 p-4 rounded-md overflow-x-auto">
+                  <code>{fileContents[file.file]?.content}</code>
+                </pre>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    );
+  };
+
+  console.log("Here be tokens");
+  console.log(tokens?.access);
+  console.log(tokens?.refresh);
 
   if (isLoading) {
     return (
@@ -763,7 +849,14 @@ const SubmissionJudgingPage = () => {
                               </a>
                             </Button>
                           </TableCell>
-                        </TableRow>
+                          <TableCell>
+                          <CardContent>
+                            <div className="space-y-4">
+                              {renderFileContent()}                              
+                            </div>
+                          </CardContent>
+                          </TableCell>
+                        </TableRow>                        
                       ))}
                     </TableBody>
                   </Table>

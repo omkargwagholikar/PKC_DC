@@ -40,6 +40,14 @@ export const Navbar: React.FC<NavbarProps> = () => {
         {isLoggedIn && (
           <>
             <NavigationMenuItem>
+              <Link to="/judge">
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Judge
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
               <NavigationMenuLink
                 onClick={handleLogout}
                 className={navigationMenuTriggerStyle()}
