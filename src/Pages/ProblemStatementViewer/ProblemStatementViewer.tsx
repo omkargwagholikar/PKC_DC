@@ -123,9 +123,19 @@ const ProblemStatementViewer = () => {
               ))}
             </div>
             <p className="text-gray-700 mb-6">{selectedProblem.definition}</p>
-            <button
+            {/* <button
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
               onClick={() => navigate(`/submission`)}
+            >
+              Submit Solution
+            </button> */}
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+              onClick={() =>
+                navigate(`/submission`, {
+                  state: { problem: selectedProblem },
+                })
+              }
             >
               Submit Solution
             </button>

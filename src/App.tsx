@@ -26,7 +26,7 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/domains" element={<DomainsList />} />
               <Route path="/problem-page" element={<ProblemStatementViewer />} />
-              <Route path="/submission" element={<SolutionSubmissionPage problemId="3" />} />
+              <Route path="/submission" element={<SolutionSubmissionPage problemId="-1" />} />
               <Route path="/judge" element={<SubmissionJudgingPage />} />
             </Routes>
           </div>
