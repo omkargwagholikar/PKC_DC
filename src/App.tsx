@@ -1,9 +1,7 @@
-// import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  // Navigate,
 } from "react-router-dom";
 import ProblemStatementViewer from "./Pages/ProblemStatementViewer/ProblemStatementViewer";
 import { Navbar } from "./Pages/NavBar/NavBar";
@@ -24,6 +22,7 @@ function App() {
             <Navbar  />
             <Routes>
               <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/domains" element={<DomainsList />} />
               <Route path="/problem-page" element={<ProblemStatementViewer />} />
               <Route path="/submission" element={<SolutionSubmissionPage problemId="-1" />} />

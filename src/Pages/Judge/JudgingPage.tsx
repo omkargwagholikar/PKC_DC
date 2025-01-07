@@ -652,7 +652,16 @@ const SubmissionJudgingPage = () => {
   const fetchSubmissions = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:8000/api/submissions');
+      // const response = await fetch('http://localhost:8000/api/submissions');
+
+      const response = await fetch('http://localhost:8000/api/submissions', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tokens?.access}`, // Include the token
+        },
+      });
+
       if (!response.ok) throw new Error('Failed to fetch submissions');
       const data = await response.json();
       setSubmissions(data.submissions);
@@ -666,10 +675,23 @@ const SubmissionJudgingPage = () => {
   const handleJudgeSubmission = async (status: 'approved' | 'rejected') => {
     if (!selectedSubmission) return;
     try {
+      // const response = await fetch(`http://localhost:8000/api/submissions/${selectedSubmission.id}/judge/`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ status, score: score ? parseFloat(score) : null, feedback }),
+      // });
+      
       const response = await fetch(`http://localhost:8000/api/submissions/${selectedSubmission.id}/judge/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, score: score ? parseFloat(score) : null, feedback }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tokens?.access}`, // Include the token
+        },
+        body: JSON.stringify({
+          status,
+          score: score ? parseFloat(score) : null, // Parse score as a float if provided
+          feedback,
+        }),
       });
       if (!response.ok) throw new Error('Failed to judge submission');
       await fetchSubmissions();
