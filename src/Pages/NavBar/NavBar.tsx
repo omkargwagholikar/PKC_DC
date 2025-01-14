@@ -14,10 +14,21 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = () => {
-  const { isLoggedIn , setIsLoggedIn} = useAuth();
+  const { isLoggedIn, userInfo , setIsLoggedIn, setTokens} = useAuth();
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    // setTokens(null);
+    // setIsLoggedIn(false);
+    try {
+      await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+    } catch (error) {
+      console.error('Failed to logout from server:', error);
+    } finally {
+      setTokens(null);
+      setIsLoggedIn(false);
+      window.location.href = '/login';
+    }
+    
   };
 
   return (
@@ -39,6 +50,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
         </NavigationMenuItem>
         {isLoggedIn && (
           <>
+          { userInfo?.isJudge  && 
             <NavigationMenuItem>
               <Link to="/judge">
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -46,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-
+          }
             <NavigationMenuItem>
               <NavigationMenuLink
                 onClick={handleLogout}
@@ -57,6 +69,15 @@ export const Navbar: React.FC<NavbarProps> = () => {
             </NavigationMenuItem>
           </>
         )}
+        {!isLoggedIn && 
+            <NavigationMenuItem>
+              <Link to="/login">
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Login
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+        }
         <NavigationMenuItem className="ml-auto">
           <ModeToggle />
         </NavigationMenuItem>

@@ -21,7 +21,7 @@ function App() {
           <div className="App">
             <Navbar  />
             <Routes>
-              <Route path="/" element={<Login />} />
+              <Route path="/" element={<DomainsList />} />
               <Route path="/login" element={<Login />} />
               <Route path="/domains" element={<DomainsList />} />
               <Route path="/problem-page" element={<ProblemStatementViewer />} />
