@@ -13,16 +13,19 @@ import "./domain-list.css";
 const DomainsList = () => {
   const items = [
     {
+      question_id: 1,
       name: "Data Science",
       description: "A fantastic first item with amazing properties",
       icon: "🚀",
     },
     {
+      question_id: 2,
       name: "Health Sciences",
       description: "Second item that brings innovation to the table",
       icon: "🌟",
     },
     {
+      question_id: 3,
       name: "Policy",
       description: "Third item that stands out from the crowd",
       icon: "🔬",
@@ -34,7 +37,12 @@ const DomainsList = () => {
       <h2 className="items-header">Explore Our Collection</h2>
       <div className="items-grid">
         {items.map((item, index) => (
-          <Link to={`/problem-page`} key={index} className="item-card">
+          <Link 
+            to="/problem-page" 
+            state={{ question_id: item.question_id }}
+            key={index} 
+            className="item-card"
+          >
             <Card className="hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <div className="flex items-center justify-between">
