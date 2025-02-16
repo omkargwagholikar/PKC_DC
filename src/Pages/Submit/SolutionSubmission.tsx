@@ -10,6 +10,9 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = () => {
   const { tokens, setTokens } = useAuth();
   const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(null);
 
+  // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
   const handleSubmit = async (data: SolutionFormData) => {
     if (!tokens) {
@@ -26,7 +29,7 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = () => {
     });
 
     const makeRequest = async (accessToken: string) => {
-      return fetch('http://localhost:8000/player/solutions/', {
+      return fetch(`${API_BASE_URL}/player/solutions/`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -37,7 +40,7 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = () => {
 
     let response = await makeRequest(tokens.access);
     if (response.status === 401) {
-      const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+      const refreshResponse = await fetch(`${API_BASE_URL}/api/token/refresh/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

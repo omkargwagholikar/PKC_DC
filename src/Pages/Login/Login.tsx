@@ -22,6 +22,10 @@ const Login: React.FC<LoginProps> = () => {
   const navigate = useNavigate();
   const { setTokens, setIsLoggedIn } = useAuth();
 
+  // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prevForm) => ({ ...prevForm, [name]: value }));
@@ -30,7 +34,7 @@ const Login: React.FC<LoginProps> = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8000/api/token/', {
+      const response = await fetch(`${API_BASE_URL}/api/token/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

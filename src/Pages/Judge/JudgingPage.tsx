@@ -17,6 +17,10 @@ import { Download, Check, X, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from '@/context/AuthContext';
 
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+
 interface SubmittedFile {
   id: number;
   file: string;
@@ -72,8 +76,8 @@ const SubmissionJudgingPage = () => {
   
     try {
       setIsLoading(true);
-  
-      let response = await fetch('http://localhost:8000/api/submissions', {
+
+      let response = await fetch(`${API_BASE_URL}/api/submissions`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +89,7 @@ const SubmissionJudgingPage = () => {
       if (response.status === 401) {
         console.log("Outdated tokens, refreshing");
 
-        const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+        const refreshResponse = await fetch(`${API_BASE_URL}/api/token/refresh/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -101,7 +105,7 @@ const SubmissionJudgingPage = () => {
           });
   
           // Retry fetching submissions with the new token
-          response = await fetch('http://localhost:8000/api/submissions', {
+          response = await fetch(`${API_BASE_URL}/api/submissions`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -130,7 +134,7 @@ const SubmissionJudgingPage = () => {
   const makeRequest = async (accessToken: string, status: 'approved' | 'rejected') => {
     if (!selectedSubmission) return;
   
-    const response = await fetch(`http://localhost:8000/api/submissions/${selectedSubmission.id}/judge/`, {
+    const response = await fetch(`${API_BASE_URL}/api/submissions/${selectedSubmission.id}/judge/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -158,7 +162,7 @@ const SubmissionJudgingPage = () => {
   
       // Handle token expiration and retry with refreshed token
       if (response?.status === 401) {
-        const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+        const refreshResponse = await fetch(`${API_BASE_URL}/api/token/refresh/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -205,7 +209,7 @@ const SubmissionJudgingPage = () => {
     }));
 
     try {
-      const response = await fetch(`http://localhost:8000/api/download${filePath}`);
+      const response = await fetch(`${API_BASE_URL}/api/download${filePath}`);
       if (!response.ok) throw new Error('Failed to fetch file content');
       const content = await response.text();
       
@@ -234,7 +238,7 @@ const SubmissionJudgingPage = () => {
         }));
     
         // Fetch the file
-        const response = await fetch(`http://localhost:8000/api/download${filePath}`);
+        const response = await fetch(`${API_BASE_URL}/api/download${filePath}`);
         
         if (!response.ok) throw new Error('Failed to download file');
         
