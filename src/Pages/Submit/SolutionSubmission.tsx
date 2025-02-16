@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { SolutionForm } from './SolutionForm';
 import { SolutionFormData } from './types';
@@ -8,6 +8,8 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = () => {
   const location = useLocation();
   const { problem } = location.state || {}; // Access problem data
   const { tokens, setTokens } = useAuth();
+  const [submissionSuccess, setSubmissionSuccess] = useState<string | null>(null);
+
 
   const handleSubmit = async (data: SolutionFormData) => {
     if (!tokens) {
@@ -60,7 +62,8 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = () => {
     if (!response.ok) {
       throw new Error('Failed to submit solution');
     }
-
+    
+    setSubmissionSuccess('Solution submitted successfully! 🎉');
     console.log('Solution submitted successfully');
   };
 
@@ -68,6 +71,8 @@ export const SolutionSubmissionPage: React.FC<{ problemId: string }> = () => {
     <div className="container mx-auto py-8">
       <h1 className="text-2xl font-bold mb-4">{problem?.title}</h1>
       <p className="text-gray-700 mb-6">{problem?.definition}</p>
+      {submissionSuccess && <p className="text-green-500">{submissionSuccess}</p>}
+
       <SolutionForm problemId={problem?.id || ''} onSubmit={handleSubmit} />
     </div>
   );

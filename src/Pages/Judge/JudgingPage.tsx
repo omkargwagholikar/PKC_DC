@@ -50,8 +50,6 @@ interface FileContent {
 }
 
 const SubmissionJudgingPage = () => {
-  const { tokens } = useAuth();
-
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [selectedQuestion, setSelectedQuestion] = useState<number | null>(null);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -60,54 +58,139 @@ const SubmissionJudgingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fileContents, setFileContents] = useState<Record<string, FileContent>>({});
+  const { tokens, setTokens } = useAuth();
 
   useEffect(() => {
     fetchSubmissions();
   }, []);
 
   const fetchSubmissions = async () => {
+    if (!tokens?.access) {
+      setError('User is not authenticated');
+      return;
+    }
+  
     try {
       setIsLoading(true);
-      // const response = await fetch('http://localhost:8000/api/submissions');
-
-      const response = await fetch('http://localhost:8000/api/submissions', {
+  
+      let response = await fetch('http://localhost:8000/api/submissions', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${tokens?.access}`, // Include the token
+          Authorization: `Bearer ${tokens.access}`, // Include the token
         },
       });
+  
+      // Handle token expiration and retry with refreshed token
+      if (response.status === 401) {
+        console.log("Outdated tokens, refreshing");
 
+        const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refresh: tokens.refresh }),
+        });
+  
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          setTokens({
+            access: refreshData.access,
+            refresh: tokens.refresh,
+          });
+  
+          // Retry fetching submissions with the new token
+          response = await fetch('http://localhost:8000/api/submissions', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${refreshData.access}`, // Use the refreshed token
+            },
+          });
+        } else {
+          setTokens(null);
+          window.location.href = '/login';
+          return;
+        }
+      }
+  
       if (!response.ok) throw new Error('Failed to fetch submissions');
+  
       const data = await response.json();
       setSubmissions(data.submissions);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching submissions');
     } finally {
       setIsLoading(false);
     }
   };
 
+  
+  const makeRequest = async (accessToken: string, status: 'approved' | 'rejected') => {
+    if (!selectedSubmission) return;
+  
+    const response = await fetch(`http://localhost:8000/api/submissions/${selectedSubmission.id}/judge/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`, // Include the token
+      },
+      body: JSON.stringify({
+        status,
+        score: score ? parseFloat(score) : null, // Parse score as a float if provided
+        feedback,
+      }),
+    });
+  
+    return response;
+  };
+
   const handleJudgeSubmission = async (status: 'approved' | 'rejected') => {
     if (!selectedSubmission) return;
-    try {      
-      const response = await fetch(`http://localhost:8000/api/submissions/${selectedSubmission.id}/judge/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${tokens?.access}`, // Include the token
-        },
-        body: JSON.stringify({
-          status,
-          score: score ? parseFloat(score) : null, // Parse score as a float if provided
-          feedback,
-        }),
-      });
-      if (!response.ok) throw new Error('Failed to judge submission');
+    if (!tokens) {
+      throw new Error('User is not authenticated');
+    }
+  
+    try {
+      console.log("Submitting");
+      let response = await makeRequest(tokens.access, status);
+  
+      // Handle token expiration and retry with refreshed token
+      if (response?.status === 401) {
+        const refreshResponse = await fetch('http://localhost:8000/api/token/refresh/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refresh: tokens.refresh }),
+        });
+  
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          setTokens({
+            access: refreshData.access,
+            refresh: tokens.refresh,
+          });
+  
+          // Retry the request with the new access token
+          response = await makeRequest(refreshData.access, status);
+        } else {
+          setTokens(null);
+          window.location.href = '/login';
+          return;
+        }
+      }
+  
+      if (!response?.ok) {
+        throw new Error('Failed to judge submission');
+      }
+  
+      // Refresh submissions list after successful submission
       await fetchSubmissions();
       setSelectedSubmission(null);
-      setScore('');
-      setFeedback('');
+      setScore(''); // Reset score input
+      setFeedback(''); // Reset feedback input
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to judge submission');
     }
@@ -238,11 +321,11 @@ const SubmissionJudgingPage = () => {
     );
   };
 
-  console.log("Here be tokens");
-  console.log(tokens?.access);
-  console.log(tokens?.refresh);
+  // console.log("Here be tokens");
+  // console.log(tokens?.access);
+  // console.log(tokens?.refresh);
 
-  console.log(submissions);
+  // console.log(submissions);
   
   if (isLoading) {
     return (
