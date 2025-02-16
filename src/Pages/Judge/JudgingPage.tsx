@@ -277,8 +277,8 @@ const SubmissionJudgingPage = () => {
     if (!selectedSubmission) return null;
     if(!file) return null;
 
-    console.log("Clicked here");
-    console.log(file);
+    // console.log("Clicked here");
+    // console.log(file);
     
     return (
       <div className="space-y-4">
