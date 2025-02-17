@@ -130,7 +130,7 @@ export const SolutionForm: React.FC<SolutionFormProps> = ({  onSubmit }) => {
                     />
 
                     <FileUpload
-                      label="Additional Files"
+                      label="Additional Files/ Proof files/ Supplementary Data"
                       acceptedTypes={ACCEPTED_FILE_TYPES.additional}
                       files={field.value.filter(f => f.type === 'additional')}
                       onChange={files => {
